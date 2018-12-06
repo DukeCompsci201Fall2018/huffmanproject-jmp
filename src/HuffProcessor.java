@@ -13,7 +13,7 @@ import java.util.PriorityQueue;
 
 public class HuffProcessor {
 
-	public static final int SINGLE_BIT = 1;
+	private static final int SINGLE_BIT = 1;
 	public static final int BITS_PER_WORD = 8;
 	public static final int BITS_PER_INT = 32;
 	public static final int ALPH_SIZE = (1 << BITS_PER_WORD); 
@@ -59,7 +59,7 @@ public class HuffProcessor {
 		out.close();
 	}
 	
-	public void writeCodings(String[] codings, BitInputStream in, BitOutputStream out) {
+	private void writeCodings(String[] codings, BitInputStream in, BitOutputStream out) {
 		while(true) {
 			int bits = in.readBits(BITS_PER_WORD);
 			if(bits == -1) {
@@ -72,7 +72,7 @@ public class HuffProcessor {
 		}	
 	}
 	
-	public void writeTree(HuffNode root, BitOutputStream out) {
+	private void writeTree(HuffNode root, BitOutputStream out) {
 		if(root.myLeft == null && root.myRight == null){
 			out.writeBits(SINGLE_BIT, 1);
 			out.writeBits(BITS_PER_WORD + 1, root.myValue);
@@ -83,7 +83,7 @@ public class HuffProcessor {
 		writeTree(root.myRight, out);
 	}
 	
-	public void createEncodings(HuffNode root, String path, String[] codings) {
+	private void createEncodings(HuffNode root, String path, String[] codings) {
 		if(root.myLeft == null && root.myRight == null) {
 			codings[root.myValue] = path;
 			return;
@@ -92,7 +92,7 @@ public class HuffProcessor {
 		createEncodings(root.myRight, path + "1", codings);
 	}
 	
-	public HuffNode createTree(int[] counts){
+	private HuffNode createTree(int[] counts){
 		PriorityQueue<HuffNode> pq = new PriorityQueue<HuffNode>();
 		
 		for(int i = 0; i < counts.length; i++) {
@@ -109,7 +109,7 @@ public class HuffProcessor {
 		return pq.remove();
 	}
 	
-	public int[] getFrequencies(BitInputStream in) {
+	private int[] getFrequencies(BitInputStream in) {
 		int[] counts = new int[ALPH_SIZE + 1];
 		
 		while(true) {
@@ -144,7 +144,7 @@ public class HuffProcessor {
 		out.close();
 	}
 	
-	public void writeOutput(HuffNode root, BitInputStream in, BitOutputStream out) {
+	private void writeOutput(HuffNode root, BitInputStream in, BitOutputStream out) {
 		HuffNode current = root;
 		while (true){
 			int bits = in.readBits(SINGLE_BIT);
@@ -170,7 +170,7 @@ public class HuffProcessor {
 		}
 	}
 	
-	public HuffNode readTreeHeader(BitInputStream in) {
+	private HuffNode readTreeHeader(BitInputStream in) {
 		int bit = in.readBits(SINGLE_BIT);
 		if(bit == -1) {
 			throw new HuffException("error decoding huff tree");
